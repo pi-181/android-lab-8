@@ -27,14 +27,11 @@ public class MainActivity extends AppCompatActivity {
 
         final String databaseName = "myDB";
         materialTable = new MaterialTableHelper(this, databaseName, null, 1);
-        materialTable.deleteTable();
         materialTable.onCreate(materialTable.getWritableDatabase());
         vendorTable = new VendorTableHelper(this, databaseName, null, 1);
-        vendorTable.deleteTable();
         vendorTable.onCreate(vendorTable.getWritableDatabase());
         materialTable = new MaterialTableHelper(this, databaseName, null, 1);
         mainTable = new MainTableHelper(this, databaseName, null, 1);
-        mainTable.deleteTable();
         mainTable.onCreate(mainTable.getWritableDatabase());
 
         mhMaterialIdInput = findViewById(R.id.mhMaterialIdInput);
@@ -81,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                     Integer.parseInt(mhCostsInput.getText().toString())
             );
         } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();;
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -103,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             materialTable.insert(material);
             mMaterialNameInput.setText("");
         } catch (Exception e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();;
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
