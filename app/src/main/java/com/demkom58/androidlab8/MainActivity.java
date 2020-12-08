@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
     private MyOpenHelper myHelper = null;
     private EditText field1, field2, result;
-    private SQLiteDatabase DB;
+    private SQLiteDatabase database;
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -38,14 +38,14 @@ public class MainActivity extends AppCompatActivity {
         Log.d("myLogs",
                 "Insert INTO DB (" + field1.getText().toString() + "," + field2.getText().toString() + ")");
 
-        DB = myHelper.getWritableDatabase();
+        database = myHelper.getWritableDatabase();
 
-        ContentValues CV = new ContentValues();
-        CV.put(myHelper.FIELD_NAME_1, field1.getText().toString());
-        CV.put(myHelper.FIELD_NAME_2, field2.getText().toString());
+        ContentValues values = new ContentValues();
+        values.put(myHelper.FIELD_NAME_1, field1.getText().toString());
+        values.put(myHelper.FIELD_NAME_2, field2.getText().toString());
 
-        DB.insert(myHelper.TABLE_NAME, null, CV);
-        DB.close();
+        database.insert(myHelper.TABLE_NAME, null, values);
+        database.close();
 
         field1.setText("");
         field2.setText("");
@@ -54,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
     public void readDatabase(View view) {
         result.setText("");
         Log.d("myLogs", "READ FROM DB");
-        DB = myHelper.getReadableDatabase();
+        database = myHelper.getReadableDatabase();
 
         String[] columns = {"_id", myHelper.FIELD_NAME_1, myHelper.FIELD_NAME_2};
-        Cursor cursor = DB.query(myHelper.TABLE_NAME, columns, null,
+        Cursor cursor = database.query(myHelper.TABLE_NAME, columns, null,
                 null, null, null, "_id");
 
         if (cursor != null) {
@@ -70,14 +70,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        DB.close();
+        database.close();
     }
 
     public void deleteDatabase(View view) {
         Log.d("myLogs", "Delete Database");
-        DB = myHelper.getWritableDatabase();
-        DB.delete(myHelper.TABLE_NAME, null, null);
-        DB.close();
+        database = myHelper.getWritableDatabase();
+        database.delete(myHelper.TABLE_NAME, null, null);
+        database.close();
     }
 
 }

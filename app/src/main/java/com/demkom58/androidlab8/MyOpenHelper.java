@@ -7,9 +7,9 @@ import android.util.Log;
 
 public class MyOpenHelper extends SQLiteOpenHelper {
 
-    public String TABLE_NAME = "first_table";
-    public String FIELD_NAME_1 = "first_field";
-    public String FIELD_NAME_2 = "second_field";
+    public static final String TABLE_NAME = "first_table";
+    public static final String FIELD_NAME_1 = "first_field";
+    public static final String FIELD_NAME_2 = "second_field";
 
     MyOpenHelper(Context ct, String nm, SQLiteDatabase.CursorFactory cf, int vs) {
         super(ct, nm, cf, vs);
@@ -23,8 +23,10 @@ public class MyOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase DB) {
         Log.d("myLogs", "| Create |" + DB.toString());
-        String query = "create table " + TABLE_NAME + " ( _id integer primary key autoincrement, "
-                + FIELD_NAME_1 + " TEXT, " + FIELD_NAME_2 + " TEXT)";
+        String query = "create table " + TABLE_NAME
+                + " ( _id integer primary key autoincrement, " + FIELD_NAME_1 + " TEXT, " + FIELD_NAME_2 + " TEXT)";
         DB.execSQL(query);
     }
 }
+
+
