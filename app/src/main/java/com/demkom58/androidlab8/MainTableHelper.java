@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 public class MainTableHelper extends AbstractSQLiteHelper {
 
@@ -39,6 +40,18 @@ public class MainTableHelper extends AbstractSQLiteHelper {
 
     public void insert(int materialId, int vendorId, String receiveDate, int consignmentNumber, int warehouseNumber,
                        String responsiblePerson, int materialCount, String units, int costs) {
+        if (getReadableDatabase().rawQuery(
+                "SELECT * FROM material WHERE material_id = ?", new String[]{String.valueOf(materialId)}).getCount() < 1) {
+            Toast.makeText(super.context, "Not found material with id " + materialId, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (getReadableDatabase().rawQuery(
+                "SELECT * FROM vendor WHERE vendor_id = ?", new String[]{String.valueOf(vendorId)}).getCount() < 1) {
+            Toast.makeText(super.context, "Not found vendor with id " + vendorId, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         ContentValues values = new ContentValues();
         values.put("material_id", materialId);
         values.put("vendor_id", vendorId);

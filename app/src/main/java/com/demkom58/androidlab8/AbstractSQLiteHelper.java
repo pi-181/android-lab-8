@@ -9,9 +9,11 @@ import android.util.Log;
 
 public abstract class AbstractSQLiteHelper extends SQLiteOpenHelper {
     private final String tableName;
+    protected Context context;
 
     public AbstractSQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, String tableName) {
         super(context, name, factory, version);
+        this.context = context;
         this.tableName = tableName;
     }
 
