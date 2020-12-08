@@ -1,83 +1,110 @@
 package com.demkom58.androidlab8;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-    private MyOpenHelper myHelper = null;
-    private EditText field1, field2, result;
-    private SQLiteDatabase database;
+    private VendorTableHelper vendorTable = null;
+    private MaterialTableHelper materialTable = null;
+    private MainTableHelper mainTable = null;
+
+    private EditText
+            mhMaterialIdInput, mhVendorIdInput,
+            mhReceiveDateInput, mhConsigmentNumberInput,
+            mhWarehouseNumberInput, mhReponsiblePersonInput,
+            mhCountInput, mhUnitsInput,
+            mhCostsInput, mhResultInput;
+    private EditText vVendorNameInput, vResultInput;
+    private EditText mMaterialNameInput, mResultInput;
 
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_main);
 
-        myHelper = new MyOpenHelper(this, "myDB", null, 1);
+        final String databaseName = "myDB";
+        materialTable = new MaterialTableHelper(this, databaseName, null, 1);
+        materialTable.deleteTable();
+        materialTable.onCreate(materialTable.getWritableDatabase());
+        vendorTable = new VendorTableHelper(this, databaseName, null, 1);
+        vendorTable.deleteTable();
+        vendorTable.onCreate(vendorTable.getWritableDatabase());
+        materialTable = new MaterialTableHelper(this, databaseName, null, 1);
+        mainTable = new MainTableHelper(this, databaseName, null, 1);
+        mainTable.deleteTable();
+        mainTable.onCreate(mainTable.getWritableDatabase());
 
-        field1 = findViewById(R.id.field1);
-        field2 = findViewById(R.id.field2);
-        result = findViewById(R.id.resultField);
+        mhMaterialIdInput = findViewById(R.id.mhMaterialIdInput);
+        mhVendorIdInput = findViewById(R.id.mhVendorIdInput);
+        mhReceiveDateInput = findViewById(R.id.mhReceiveDateInput);
+        mhConsigmentNumberInput = findViewById(R.id.mhConsigmentNumberInput);
+        mhWarehouseNumberInput = findViewById(R.id.mhWarehouseNumberInput);
+        mhReponsiblePersonInput = findViewById(R.id.mhReponsiblePersonInput);
+        mhCountInput = findViewById(R.id.mhCountInput);
+        mhUnitsInput = findViewById(R.id.mhUnitsInput);
+        mhCostsInput = findViewById(R.id.mhCostsInput);
+        mhResultInput = findViewById(R.id.mhResultField);
 
-        findViewById(R.id.buttonEnterData).setOnClickListener(this::insertIntoDatabase);
-        findViewById(R.id.buttonOutputData).setOnClickListener(this::readDatabase);
-        findViewById(R.id.buttonDelete).setOnClickListener(this::deleteDatabase);
+        vVendorNameInput = findViewById(R.id.vVendorNameInput);
+        vResultInput = findViewById(R.id.vResultField);
+
+        mMaterialNameInput = findViewById(R.id.mMaterialNameInput);
+        mResultInput = findViewById(R.id.mResultField);
+
+        findViewById(R.id.mhButtonEnterData).setOnClickListener(this::insertIntoMhDatabase);
+        findViewById(R.id.mhButtonOutputData).setOnClickListener(v -> mhResultInput.setText(mainTable.getContent()));
+        findViewById(R.id.mhButtonDelete).setOnClickListener(v -> mainTable.deleteAll());
+
+        findViewById(R.id.vButtonEnterData).setOnClickListener(this::insertIntoVDatabase);
+        findViewById(R.id.vButtonOutputData).setOnClickListener(v -> vResultInput.setText(vendorTable.getContent()));
+        findViewById(R.id.vButtonDelete).setOnClickListener(v -> vendorTable.deleteAll());
+
+        findViewById(R.id.mButtonEnterData).setOnClickListener(this::insertIntoMDatabase);
+        findViewById(R.id.mButtonOutputData).setOnClickListener(v -> mResultInput.setText(materialTable.getContent()));
+        findViewById(R.id.mButtonDelete).setOnClickListener(v -> materialTable.deleteAll());
     }
 
-    public void insertIntoDatabase(View view) {
-        if (field1.getText().toString().equals("") ||
-                field2.getText().toString().equals(""))
-            return;
-
-        Log.d("myLogs",
-                "Insert INTO DB (" + field1.getText().toString() + "," + field2.getText().toString() + ")");
-
-        database = myHelper.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(myHelper.FIELD_NAME_1, field1.getText().toString());
-        values.put(myHelper.FIELD_NAME_2, field2.getText().toString());
-
-        database.insert(myHelper.TABLE_NAME, null, values);
-        database.close();
-
-        field1.setText("");
-        field2.setText("");
-    }
-
-    public void readDatabase(View view) {
-        result.setText("");
-        Log.d("myLogs", "READ FROM DB");
-        database = myHelper.getReadableDatabase();
-
-        String[] columns = {"_id", myHelper.FIELD_NAME_1, myHelper.FIELD_NAME_2};
-        Cursor cursor = database.query(myHelper.TABLE_NAME, columns, null,
-                null, null, null, "_id");
-
-        if (cursor != null) {
-            cursor.moveToFirst();
-            if (cursor.moveToFirst()) {
-                do {
-                    result.setText(result.getText().toString() + "\n" + cursor.getString(0) + ") "
-                            + cursor.getString(1) + "," + cursor.getString(2));
-                } while (cursor.moveToNext());
-            }
+    public void insertIntoMhDatabase(View view) {
+        try {
+            mainTable.insert(
+                    Integer.parseInt(mhMaterialIdInput.getText().toString()),
+                    Integer.parseInt(mhVendorIdInput.getText().toString()),
+                    mhReceiveDateInput.getText().toString(),
+                    Integer.parseInt(mhConsigmentNumberInput.getText().toString()),
+                    Integer.parseInt(mhWarehouseNumberInput.getText().toString()),
+                    mhReponsiblePersonInput.getText().toString(),
+                    Integer.parseInt(mhCountInput.getText().toString()),
+                    mhUnitsInput.getText().toString(),
+                    Integer.parseInt(mhCostsInput.getText().toString())
+            );
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();;
         }
-
-        database.close();
     }
 
-    public void deleteDatabase(View view) {
-        Log.d("myLogs", "Delete Database");
-        database = myHelper.getWritableDatabase();
-        database.delete(myHelper.TABLE_NAME, null, null);
-        database.close();
+    public void insertIntoVDatabase(View view) {
+        try {
+            String vendor = vVendorNameInput.getText().toString();
+            if (vendor.isEmpty()) return;
+            vendorTable.insert(vendor);
+            vVendorNameInput.setText("");
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void insertIntoMDatabase(View view) {
+        try {
+            String material = mMaterialNameInput.getText().toString();
+            if (material.isEmpty()) return;
+            materialTable.insert(material);
+            mMaterialNameInput.setText("");
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();;
+        }
     }
 
 }
